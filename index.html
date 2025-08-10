@@ -10,18 +10,26 @@
         :root {
             --primary-cyan: #17a2b8;
             --secondary-cyan: #20c997;
-            --light-cyan: #e0f7fa;
             --dark-cyan: #0a5c6a;
         }
 
         body {
-            background: linear-gradient(to bottom, #7fcac8 30%, #0a5c6a 80%);
             font-family: sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            
+            background: linear-gradient(to right, #7fcac8, #0a5c6a, #20c997);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .main-header {
@@ -39,14 +47,6 @@
             margin-bottom: 0.5rem;
         }
 
-        .main-header p {
-            font-size: 1.5rem;
-            color: white;
-            font-weight: bold;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
-            margin-top: 0;
-        }
-
         .container {
             max-width: 700px;
             background-color: white;
@@ -60,8 +60,16 @@
             color: var(--dark-cyan);
         }
 
-        .form-select, .form-control, .form-check-label {
-            color: #495057;
+        .btn-custom-black {
+            color: #000;
+            border-color: var(--primary-cyan);
+        }
+
+        .btn-custom-black:hover,
+        .btn-check:checked + .btn-custom-black {
+            color: white;
+            background-color: var(--primary-cyan);
+            border-color: var(--primary-cyan);
         }
 
         .btn-primary {
@@ -133,43 +141,10 @@
             background-color: #f8f9fa;
         }
 
-        /* Gaya untuk halaman konfirmasi */
-        .confirmation-page {
-            text-align: center;
-            padding: 40px;
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, #7fcac8 30%, #0a5c6a 80%);
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 100;
-        }
-        .confirmation-content {
-            text-align: center;
-        }
-        .confirmation-page h2 {
-            font-size: 4rem;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-            margin-bottom: 1.5rem;
-        }
-        .confirmation-page #visitor-name {
-            font-size: 2.5rem;
-            color: white;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            margin-bottom: 0.5rem;
-        }
-        .confirmation-page .visit-message {
-            font-size: 1.5rem;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        /* Gaya untuk Kotak Pilihan */
+        .btn-group-sm label.btn {
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
         }
     </style>
 </head>
@@ -177,8 +152,7 @@
 
 <div id="main-content">
     <div class="main-header">
-        <h1>-------- Lubangsa's Library --------<br>
-</h1>
+        <h1>-------- Lubangsa's Library --------</h1>
     </div>
 
     <div class="container" id="form-container">
@@ -198,13 +172,15 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="jenjang" class="form-label">Jenjang</label>
-                <select class="form-select" id="jenjang" required>
-                    <option value="" disabled selected>Pilih Jenjang</option>
-                    <option value="SLTP">SLTP</option>
-                    <option value="SLTA">SLTA</option>
-                    <option value="PT">PT</option>
-                </select>
+                <label class="form-label">Jenjang</label>
+                <div class="btn-group-sm d-flex flex-wrap" role="group" aria-label="Pilih Jenjang">
+                    <input type="radio" class="btn-check" name="jenjang" id="jenjang-sltp" value="SLTP" required autocomplete="off">
+                    <label class="btn btn-custom-black flex-fill m-1 rounded" for="jenjang-sltp">SLTP</label>
+                    <input type="radio" class="btn-check" name="jenjang" id="jenjang-slta" value="SLTA" required autocomplete="off">
+                    <label class="btn btn-custom-black flex-fill m-1 rounded" for="jenjang-slta">SLTA</label>
+                    <input type="radio" class="btn-check" name="jenjang" id="jenjang-pt" value="PT" required autocomplete="off">
+                    <label class="btn btn-custom-black flex-fill m-1 rounded" for="jenjang-pt">PT</label>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="judul_buku" class="form-label">Judul Buku</label>
@@ -214,20 +190,42 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="kategori" class="form-label">Kategori</label>
-                <div class="search-container">
-                    <input type="text" class="form-control" id="kategori" placeholder="Ketik atau pilih kategori" required autocomplete="off">
-                    <ul id="kategori-results" class="search-results-dropdown"></ul>
+                <label class="form-label">Kategori</label>
+                <div class="btn-group-sm d-flex flex-wrap" role="group" aria-label="Pilih Kategori">
+                    <input type="radio" class="btn-check" name="kategori" id="kat-sejarah" value="Sejarah dan Geografi" autocomplete="off" required>
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-sejarah">Sejarah dan Geografi</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-sastra" value="Kesusastraan" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-sastra">Kesusastraan</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-komik" value="Komik" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-komik">Komik</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-agama" value="Agama" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-agama">Agama</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-filsafat" value="Filsafat dan Psikologi" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-filsafat">Filsafat dan Psikologi</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-ilmumurni" value="Ilmu Murni" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-ilmumurni">Ilmu Murni</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-ilmusosial" value="Ilmu Sosial" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-ilmusosial">Ilmu Sosial</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-ilmubahasa" value="Ilmu Bahasa" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-ilmubahasa">Ilmu Bahasa</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-berita" value="Berita" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-berita">Berita</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-karya" value="Karya Umum" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-karya">Karya Umum</label>
+                    <input type="radio" class="btn-check" name="kategori" id="kat-majalah" value="Majalah" autocomplete="off">
+                    <label class="btn btn-custom-black m-1 rounded" for="kat-majalah">Majalah</label>
                 </div>
             </div>
             <div class="mb-3">
-                <label for="keterangan" class="form-label">Keterangan</label>
-            <select class="form-select" id="keterangan" required>
-                <option value="Baca">Baca</option>
-                <option value="Pinjam">Pinjam</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Konfirmasi</button>
+                <label class="form-label">Keterangan</label>
+                <div class="btn-group w-100" role="group" aria-label="Pilih Keterangan">
+                    <input type="radio" class="btn-check" name="keterangan" id="keterangan-baca" value="Baca" autocomplete="off" required>
+                    <label class="btn btn-custom-black" for="keterangan-baca">Baca</label>
+                    <input type="radio" class="btn-check" name="keterangan" id="keterangan-pinjam" value="Pinjam" autocomplete="off" required>
+                    <label class="btn btn-custom-black" for="keterangan-pinjam">Pinjam</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3" id="submit-btn">Konfirmasi</button>
         </form>
         <div class="text-center mt-3">
             <a href="password.html" class="btn btn-sm" style="color: #6c757d;">Klik Konfirmasi di Atas</a>
@@ -235,19 +233,11 @@
     </div>
 </div>
 
-<div class="confirmation-page" id="confirmation-page">
-    <div class="confirmation-content">
-        <h2>Terima Kasih</h2>
-        <p id="visitor-name"></p>
-        <p class="visit-message">Telah Berkunjung Di Perpustakaan Lubangsa</p>
-    </div>
-</div>
-
 <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-info text-white">
-        <h5 class="modal-title" id="notificationModalLabel">Pemberitahuan</h5>
+        <h5 class="modal-title" id="notificationModalLabel">Peringatan</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" id="notificationMessage">
@@ -275,19 +265,18 @@
         appId: "1:178060973033:web:9e5207f0acb9e9fba8b178"
     };
 
-    // Inisialisasi Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
     let masterData = {
         nama: [],
         blok_kamar: [],
-        judul_buku: [],
-        kategori: []
+        judul_buku: []
     };
 
-    function showModalNotification(message) {
+    function showModalNotification(message, title = 'Peringatan') {
         const myModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+        document.getElementById('notificationModalLabel').textContent = title;
         document.getElementById('notificationMessage').textContent = message;
         myModal.show();
     }
@@ -296,8 +285,7 @@
         const refs = {
             nama: database.ref('data_master/nama'),
             blok_kamar: database.ref('data_master/blok'),
-            judul_buku: database.ref('data_master/buku'),
-            kategori: database.ref('data_master/kategori')
+            judul_buku: database.ref('data_master/buku')
         };
 
         for (const key in refs) {
@@ -315,25 +303,21 @@
         const input = document.getElementById(inputId);
         const resultsDropdown = document.getElementById(resultsId);
         const inputValue = input.value.toLowerCase();
-
         resultsDropdown.innerHTML = '';
         if (inputValue === '') {
             resultsDropdown.style.display = 'none';
             return;
         }
-
         const filteredData = data.filter(item => item.toLowerCase().includes(inputValue));
-
         if (filteredData.length > 0) {
             filteredData.forEach((item, index) => {
                 const li = document.createElement('li');
                 li.textContent = item;
-                if (index === 0) {
-                    li.classList.add('focused');
-                }
+                if (index === 0) li.classList.add('focused');
                 li.addEventListener('click', () => {
                     input.value = item;
                     resultsDropdown.style.display = 'none';
+                    checkAndSubmit();
                 });
                 resultsDropdown.appendChild(li);
             });
@@ -346,18 +330,11 @@
     function setupSearchInput(inputId, resultsId, dataKey) {
         const input = document.getElementById(inputId);
         const resultsDropdown = document.getElementById(resultsId);
-
         input.addEventListener('input', () => {
             showResults(inputId, resultsId, masterData[dataKey]);
+            checkAndSubmit();
         });
-
-        input.addEventListener('blur', (e) => {
-            setTimeout(() => {
-                resultsDropdown.style.display = 'none';
-            }, 100);
-        });
-
-        // Event listener untuk keyboard
+        input.addEventListener('blur', () => setTimeout(() => resultsDropdown.style.display = 'none', 100));
         input.addEventListener('keydown', (e) => {
             const focusedItem = resultsDropdown.querySelector('.focused');
             if (e.key === 'ArrowDown') {
@@ -379,60 +356,75 @@
                 }
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                if (focusedItem) {
-                    focusedItem.click();
-                }
+                if (focusedItem) focusedItem.click();
             }
         });
     }
 
+    // Fungsi untuk memeriksa semua input dan submit otomatis
+    function checkAndSubmit() {
+        const form = document.getElementById('pengunjung-form');
+        const nama = document.getElementById('nama').value;
+        const blokKamar = document.getElementById('blok_kamar').value;
+        const judulBuku = document.getElementById('judul_buku').value;
+        const jenjang = form.querySelector('input[name="jenjang"]:checked');
+        const kategori = form.querySelector('input[name="kategori"]:checked');
+        const keterangan = form.querySelector('input[name="keterangan"]:checked');
+        
+        const submitBtn = document.getElementById('submit-btn');
+
+        if (nama && blokKamar && judulBuku && jenjang && kategori && keterangan) {
+            submitBtn.click();
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         loadDataMaster();
-
         setupSearchInput('nama', 'nama-results', 'nama');
         setupSearchInput('blok_kamar', 'blok_kamar-results', 'blok_kamar');
         setupSearchInput('judul_buku', 'judul_buku-results', 'judul_buku');
-        setupSearchInput('kategori', 'kategori-results', 'kategori');
-
+        
         const form = document.getElementById('pengunjung-form');
-        const mainContent = document.getElementById('main-content');
-        const confirmationPage = document.getElementById('confirmation-page');
+
+        // Mendengarkan perubahan pada radio button untuk memicu submit otomatis
+        form.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', checkAndSubmit);
+        });
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-
+            
             const nama = document.getElementById('nama').value;
+            const kategori = form.querySelector('input[name="kategori"]:checked');
+            const jenjang = form.querySelector('input[name="jenjang"]:checked');
+            const keterangan = form.querySelector('input[name="keterangan"]:checked');
+            
+            if (!jenjang || !kategori || !keterangan) {
+                showModalNotification('Mohon lengkapi semua pilihan yang ada.');
+                return;
+            }
 
             const formData = {
                 tanggal: Date.now(),
                 nama: nama,
                 blok_kamar: document.getElementById('blok_kamar').value,
-                jenjang: document.getElementById('jenjang').value,
+                jenjang: jenjang.value,
                 judul_buku: document.getElementById('judul_buku').value,
-                kategori: document.getElementById('kategori').value,
-                keterangan: document.getElementById('keterangan').value,
+                kategori: kategori.value,
+                keterangan: keterangan.value,
             };
-
+            
             const newPengunjungRef = database.ref('pengunjung').push();
             newPengunjungRef.set(formData)
                 .then(() => {
-                    mainContent.style.display = 'none';
-                    confirmationPage.style.display = 'flex';
-                    document.getElementById('visitor-name').textContent = nama;
+                    window.location.href = `terimakasih.html?nama=${encodeURIComponent(nama)}`;
                 })
                 .catch((error) => {
-                    showModalNotification(`Gagal menyimpan data: ${error.message}`);
+                    alert(`Gagal menyimpan data: ${error.message}`);
                 });
-        });
-
-        confirmationPage.addEventListener('click', () => {
-            mainContent.style.display = 'block';
-            confirmationPage.style.display = 'none';
-            form.reset();
         });
     });
 </script>
 
 </body>
-
 </html>
