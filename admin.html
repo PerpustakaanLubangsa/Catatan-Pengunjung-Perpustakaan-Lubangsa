@@ -205,9 +205,6 @@
             <button class="nav-link" id="master-buku-tab" data-bs-toggle="tab" data-bs-target="#master-buku" type="button" role="tab" aria-controls="master-buku" aria-selected="false">Data Buku</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="master-kategori-tab" data-bs-toggle="tab" data-bs-target="#master-kategori" type="button" role="tab" aria-controls="master-kategori" aria-selected="false">Data Kategori</button>
-        </li>
-        <li class="nav-item" role="presentation">
             <button class="nav-link" id="sampah-tab" data-bs-toggle="tab" data-bs-target="#sampah" type="button" role="tab" aria-controls="sampah" aria-selected="false">Sampah</button>
         </li>
     </ul>
@@ -235,7 +232,7 @@
                                 </tr>
                             </thead>
                             <tbody id="data-pengunjung-body">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -290,22 +287,6 @@
             </div>
         </div>
         
-        <div class="tab-pane fade" id="master-kategori" role="tabpanel" aria-labelledby="master-kategori-tab">
-            <div class="card mt-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    Kelola Kategori Buku
-                    <button class="btn btn-outline-danger btn-sm" id="btn-hapus-kategori">Hapus Semua Data</button>
-                </div>
-                <div class="card-body">
-                    <form id="form-tambah-kategori" class="mb-3">
-                        <textarea id="input-kategori" class="form-control mb-2" rows="5" placeholder="Masukkan Kategori Buku (satu kategori per baris)" required></textarea>
-                        <button type="submit" class="btn btn-primary">Tambah Data</button>
-                    </form>
-                    <ul class="list-group" id="list-kategori"></ul>
-                </div>
-            </div>
-        </div>
-
         <div class="tab-pane fade" id="sampah" role="tabpanel" aria-labelledby="sampah-tab">
             <div class="card mt-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -606,22 +587,18 @@
         const namaRef = database.ref('data_master/nama');
         const blokRef = database.ref('data_master/blok');
         const bukuRef = database.ref('data_master/buku');
-        const kategoriRef = database.ref('data_master/kategori');
-
+        
         tambahDataMaster(namaRef, 'nama');
         tambahDataMaster(blokRef, 'blok');
         tambahDataMaster(bukuRef, 'buku');
-        tambahDataMaster(kategoriRef, 'kategori');
 
         loadDataMaster(namaRef, 'list-nama');
         loadDataMaster(blokRef, 'list-blok');
         loadDataMaster(bukuRef, 'list-buku');
-        loadDataMaster(kategoriRef, 'list-kategori');
         
         setupHapusSemuaData(namaRef, 'btn-hapus-nama');
         setupHapusSemuaData(blokRef, 'btn-hapus-blok');
         setupHapusSemuaData(bukuRef, 'btn-hapus-buku');
-        setupHapusSemuaData(kategoriRef, 'btn-hapus-kategori');
         
         setupHapusPengunjungKeSampah();
         setupHapusSemuaSampah();
