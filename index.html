@@ -6,6 +6,10 @@
     <title>Sistem Perpustakaan Annuqayah</title>
     <link rel="icon" href="logo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.css" rel="stylesheet">
     <style>
         :root {
             --primary-cyan: #17a2b8;
@@ -13,17 +17,27 @@
             --dark-cyan: #0a5c6a;
         }
 
+        /* Menyembunyikan scrollbar untuk Webkit (Chrome, Safari, Edge) */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Menyembunyikan scrollbar untuk Firefox */
+        html {
+            scrollbar-width: none; /* Firefox */
+        }
+
         body {
-            font-family: sans-serif;
+            font-family: 'Poppins', sans-serif;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             min-height: 100vh;
-            
             background: linear-gradient(to right, #7fcac8, #0a5c6a, #20c997);
             background-size: 400% 400%;
             animation: gradientAnimation 15s ease infinite;
+            -ms-overflow-style: none; /* IE dan Edge */
+            overflow: -moz-scrollbars-none; /* Firefox */
         }
 
         @keyframes gradientAnimation {
@@ -32,10 +46,19 @@
             100% { background-position: 0% 50%; }
         }
 
-        .main-header {
-            position: relative;
-            margin-bottom: 2rem;
+        /* Container utama untuk membatasi lebar judul dan formulir */
+        .main-content {
             width: 100%;
+            max-width: 900px;
+        }
+
+        .main-header {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
         }
 
@@ -48,11 +71,12 @@
         }
 
         .container {
-            max-width: 700px;
             background-color: white;
             padding: 40px;
-            border-radius: 10px;
+            border-radius: 0; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-top: 2rem;
+            width: 100%; /* Agar formulir menyesuaikan lebar .main-content */
         }
 
         .form-label {
@@ -60,18 +84,26 @@
             color: var(--dark-cyan);
         }
 
-        .btn-custom-black {
-            color: #000;
-            border-color: var(--primary-cyan);
+        .form-control {
+            border: none;
+            border-bottom: 2px solid var(--primary-cyan);
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            transition: border-bottom-color 0.3s ease-in-out;
+            padding-left: 0;
         }
-
-        .btn-custom-black:hover,
-        .btn-check:checked + .btn-custom-black {
-            color: white;
-            background-color: var(--primary-cyan);
-            border-color: var(--primary-cyan);
+        
+        .form-control:focus {
+            background: transparent;
+            box-shadow: none;
+            border-bottom-color: var(--dark-cyan);
         }
-
+        
+        .form-control::placeholder {
+            color: #999;
+        }
+        
         .btn-primary {
             background-color: var(--primary-cyan);
             border-color: var(--primary-cyan);
@@ -87,28 +119,68 @@
         }
 
         .modal-content {
-            border: 1px solid var(--primary-cyan);
-            border-radius: 10px;
+            border: none;
+            border-radius: 0; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
-
+        
         .modal-header {
             background-color: var(--primary-cyan);
             color: white;
-            border-bottom: 1px solid var(--dark-cyan);
-            border-radius: 10px 10px 0 0;
+            border-bottom: none;
+            border-radius: 0;
+            padding: 1.5rem;
+            position: relative;
+            text-align: center;
+        }
+        
+        .modal-header.bg-info {
+            background-color: var(--primary-cyan) !important;
+        }
+
+        .modal-header h5 {
+            font-weight: 700;
+            width: 100%;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            font-size: 1rem;
+            color: #495057;
+            padding: 2rem 1.5rem;
+        }
+        
+        .modal-footer {
+            border-top: none;
+            padding: 1rem 1.5rem 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .modal-footer .btn {
+            width: auto !important;
+            flex-grow: 0 !important;
         }
 
         .modal-footer .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
+            background-color: #e9ecef;
+            color: #495057;
+            border: none;
+            border-radius: 0;
+            font-weight: 600;
         }
 
-        .modal-footer .btn-secondary:hover {
-            background-color: #5a6268;
-            border-color: #5a6268;
+        .modal-footer .btn-primary {
+            background-color: var(--primary-cyan);
+            border: none;
+            border-radius: 0;
+            font-weight: 600;
         }
-
-        /* Gaya untuk pencarian dinamis (autocomplete) */
+        
         .search-container {
             position: relative;
         }
@@ -141,290 +213,366 @@
             background-color: #f8f9fa;
         }
 
-        /* Gaya untuk Kotak Pilihan */
-        .btn-group-sm label.btn {
-            font-size: 0.875rem;
-            padding: 0.5rem 0.75rem;
+        .ts-wrapper .ts-control {
+            border-radius: 0;
+            border: 1px solid #ced4da;
+        }
+        
+        .ts-wrapper.single .ts-control {
+            padding-right: 0.75rem;
         }
     </style>
 </head>
 <body>
+    <div class="main-content">
+        <div class="main-header">
+            <h1>Lubangsa's Library</h1>
+        </div>
 
-<div id="main-content">
-    <div class="main-header">
-        <h1>-------- Lubangsa's Library --------</h1>
-    </div>
-
-    <div class="container" id="form-container">
-        <form id="pengunjung-form">
-            <div class="mb-3">
-                <label for="nama" class="form-label">Nama Lengkap</label>
-                <div class="search-container">
-                    <input type="text" class="form-control" id="nama" placeholder="Ketik atau pilih nama" required autocomplete="off">
-                    <ul id="nama-results" class="search-results-dropdown"></ul>
+        <div class="container" id="form-container">
+            <form id="pengunjung-form">
+                <div class="mb-3">
+                    <label for="nama" class="form-label">Nama Lengkap</label>
+                    <div class="search-container">
+                        <input type="text" class="form-control" id="nama" placeholder="Ketik atau pilih nama" required autocomplete="off">
+                        <ul id="nama-results" class="search-results-dropdown"></ul>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label for="blok_kamar" class="form-label">Blok/Kamar</label>
-                <div class="search-container">
-                    <input type="text" class="form-control" id="blok_kamar" placeholder="Ketik atau pilih blok/kamar" required autocomplete="off">
-                    <ul id="blok_kamar-results" class="search-results-dropdown"></ul>
+                <div class="mb-3">
+                    <label for="blok_kamar" class="form-label">Blok/Kamar</label>
+                    <div class="search-container">
+                        <input type="text" class="form-control" id="blok_kamar" placeholder="Ketik atau pilih blok/kamar" required autocomplete="off">
+                        <ul id="blok_kamar-results" class="search-results-dropdown"></ul>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Jenjang</label>
-                <div class="btn-group-sm d-flex flex-wrap" role="group" aria-label="Pilih Jenjang">
-                    <input type="radio" class="btn-check" name="jenjang" id="jenjang-sltp" value="SLTP" required autocomplete="off">
-                    <label class="btn btn-custom-black flex-fill m-1 rounded" for="jenjang-sltp">SLTP</label>
-                    <input type="radio" class="btn-check" name="jenjang" id="jenjang-slta" value="SLTA" required autocomplete="off">
-                    <label class="btn btn-custom-black flex-fill m-1 rounded" for="jenjang-slta">SLTA</label>
-                    <input type="radio" class="btn-check" name="jenjang" id="jenjang-pt" value="PT" required autocomplete="off">
-                    <label class="btn btn-custom-black flex-fill m-1 rounded" for="jenjang-pt">PT</label>
+                <div class="mb-3">
+                    <label for="jenjang-select" class="form-label">Jenjang</label>
+                    <select class="form-select" id="jenjang-select" name="jenjang" required>
+                        <option value="">Pilih Jenjang</option>
+                        <option value="SLTP">SLTP</option>
+                        <option value="SLTA">SLTA</option>
+                        <option value="PT">PT</option>
+                    </select>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label for="judul_buku" class="form-label">Judul Buku</label>
-                <div class="search-container">
-                    <input type="text" class="form-control" id="judul_buku" placeholder="Ketik atau pilih judul buku" required autocomplete="off">
-                    <ul id="judul_buku-results" class="search-results-dropdown"></ul>
+                <div class="mb-3">
+                    <label for="judul_buku" class="form-label">Judul Buku</label>
+                    <div class="search-container">
+                        <input type="text" class="form-control" id="judul_buku" placeholder="Ketik atau pilih judul buku" required autocomplete="off">
+                        <ul id="judul_buku-results" class="search-results-dropdown"></ul>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Kategori</label>
-                <div class="btn-group-sm d-flex flex-wrap" role="group" aria-label="Pilih Kategori">
-                    <input type="radio" class="btn-check" name="kategori" id="kat-sejarah" value="Sejarah dan Geografi" autocomplete="off" required>
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-sejarah">Sejarah dan Geografi</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-sastra" value="Kesusastraan" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-sastra">Kesusastraan</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-komik" value="Komik" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-komik">Komik</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-agama" value="Agama" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-agama">Agama</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-filsafat" value="Filsafat dan Psikologi" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-filsafat">Filsafat dan Psikologi</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-ilmumurni" value="Ilmu Murni" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-ilmumurni">Ilmu Murni</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-ilmusosial" value="Ilmu Sosial" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-ilmusosial">Ilmu Sosial</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-ilmubahasa" value="Ilmu Bahasa" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-ilmubahasa">Ilmu Bahasa</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-berita" value="Berita" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-berita">Berita</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-karya" value="Karya Umum" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-karya">Karya Umum</label>
-                    <input type="radio" class="btn-check" name="kategori" id="kat-majalah" value="Majalah" autocomplete="off">
-                    <label class="btn btn-custom-black m-1 rounded" for="kat-majalah">Majalah</label>
+                <div class="mb-3">
+                    <label for="kategori-select" class="form-label">Kategori</label>
+                    <select class="form-select" id="kategori-select" name="kategori" required>
+                        <option value="">Pilih Kategori</option>
+                        <option value="Sejarah dan Geografi">Sejarah dan Geografi</option>
+                        <option value="Kesusastraan">Kesusastraan</option>
+                        <option value="Komik">Komik</option>
+                        <option value="Agama">Agama</option>
+                        <option value="Filsafat dan Psikologi">Filsafat dan Psikologi</option>
+                        <option value="Ilmu Murni">Ilmu Murni</option>
+                        <option value="Ilmu Sosial">Ilmu Sosial</option>
+                        <option value="Ilmu Bahasa">Ilmu Bahasa</option>
+                        <option value="Berita">Berita</option>
+                        <option value="Karya Umum">Karya Umum</option>
+                        <option value="Majalah">Majalah</option>
+                    </select>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Keterangan</label>
-                <div class="btn-group w-100" role="group" aria-label="Pilih Keterangan">
-                    <input type="radio" class="btn-check" name="keterangan" id="keterangan-baca" value="Baca" autocomplete="off" required>
-                    <label class="btn btn-custom-black" for="keterangan-baca">Baca</label>
-                    <input type="radio" class="btn-check" name="keterangan" id="keterangan-pinjam" value="Pinjam" autocomplete="off" required>
-                    <label class="btn btn-custom-black" for="keterangan-pinjam">Pinjam</label>
+                <div class="mb-3">
+                    <label for="keterangan-select" class="form-label">Keterangan</label>
+                    <select class="form-select" id="keterangan-select" name="keterangan" required>
+                        <option value="">Pilih Keterangan</option>
+                        <option value="Baca">Baca</option>
+                        <option value="Pinjam">Pinjam</option>
+                    </select>
                 </div>
+                <button type="submit" class="btn btn-primary mt-3" id="submit-btn">Konfirmasi</button>
+            </form>
+            <div class="text-center mt-3">
+                <a href="password.html" class="btn btn-sm" style="color: #6c757d;">Klik Konfirmasi di Atas</a>
             </div>
-            <button type="submit" class="btn btn-primary mt-3" id="submit-btn">Konfirmasi</button>
-        </form>
-        <div class="text-center mt-3">
-            <a href="password.html" class="btn btn-sm" style="color: #6c757d;">Klik Konfirmasi di Atas</a>
         </div>
     </div>
-</div>
-
-<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-info text-white">
-        <h5 class="modal-title" id="notificationModalLabel">Peringatan</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="notificationMessage">
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="notificationModalLabel">Peringatan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="notificationMessage">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
         </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-      </div>
     </div>
-  </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    // Konfigurasi Firebase Anda
-    const firebaseConfig = {
-        apiKey: "AIzaSyB3CAEuWjRjoRESevIvrPDfaGV7DfonNvY",
-        authDomain: "pustakawan2-520ab.firebaseapp.com",
-        databaseURL: "https://pustakawan2-520ab-default-rtdb.firebaseio.com",
-        projectId: "pustakawan2-520ab",
-        storageBucket: "pustakawan2-520ab.firebasestorage.app",
-        messagingSenderId: "178060973033",
-        appId: "1:178060973033:web:9e5207f0acb9e9fba8b178"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    let masterData = {
-        nama: [],
-        blok_kamar: [],
-        judul_buku: []
-    };
-
-    function showModalNotification(message, title = 'Peringatan') {
-        const myModal = new bootstrap.Modal(document.getElementById('notificationModal'));
-        document.getElementById('notificationModalLabel').textContent = title;
-        document.getElementById('notificationMessage').textContent = message;
-        myModal.show();
-    }
-
-    function loadDataMaster() {
-        const refs = {
-            nama: database.ref('data_master/nama'),
-            blok_kamar: database.ref('data_master/blok'),
-            judul_buku: database.ref('data_master/buku')
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Penambahan Nama</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="confirmationMessage">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="confirmAddNameBtn">Tambah</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3CAEuWjRjoRESevIvrPDfaGV7DfonNvY",
+            authDomain: "pustakawan2-520ab.firebaseapp.com",
+            databaseURL: "https://pustakawan2-520ab-default-rtdb.firebaseio.com",
+            projectId: "pustakawan2-520ab",
+            storageBucket: "pustakawan2-520ab.firebasestorage.app",
+            messagingSenderId: "178060973033",
+            appId: "1:178060973033:web:9e5207f0acb9e9fba8b178"
         };
 
-        for (const key in refs) {
-            refs[key].on('value', (snapshot) => {
-                const dataArray = [];
-                snapshot.forEach((childSnapshot) => {
-                    dataArray.push(childSnapshot.val());
-                });
-                masterData[key] = dataArray.sort((a, b) => a.localeCompare(b));
-            });
-        }
-    }
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-    function showResults(inputId, resultsId, data) {
-        const input = document.getElementById(inputId);
-        const resultsDropdown = document.getElementById(resultsId);
-        const inputValue = input.value.toLowerCase();
-        resultsDropdown.innerHTML = '';
-        if (inputValue === '') {
-            resultsDropdown.style.display = 'none';
-            return;
-        }
-        const filteredData = data.filter(item => item.toLowerCase().includes(inputValue));
-        if (filteredData.length > 0) {
-            filteredData.forEach((item, index) => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                if (index === 0) li.classList.add('focused');
-                li.addEventListener('click', () => {
-                    input.value = item;
-                    resultsDropdown.style.display = 'none';
-                    checkAndSubmit();
-                });
-                resultsDropdown.appendChild(li);
-            });
-            resultsDropdown.style.display = 'block';
-        } else {
-            resultsDropdown.style.display = 'none';
-        }
-    }
+        let masterData = {
+            nama: [],
+            blok_kamar: [],
+            judul_buku: []
+        };
 
-    function setupSearchInput(inputId, resultsId, dataKey) {
-        const input = document.getElementById(inputId);
-        const resultsDropdown = document.getElementById(resultsId);
-        input.addEventListener('input', () => {
-            showResults(inputId, resultsId, masterData[dataKey]);
-            checkAndSubmit();
+        document.addEventListener('DOMContentLoaded', () => {
+            new TomSelect("#jenjang-select", {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                }
+            });
+            
+            new TomSelect("#kategori-select", {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                }
+            });
+            
+            new TomSelect("#keterangan-select", {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                }
+            });
         });
-        input.addEventListener('blur', () => setTimeout(() => resultsDropdown.style.display = 'none', 100));
-        input.addEventListener('keydown', (e) => {
-            const focusedItem = resultsDropdown.querySelector('.focused');
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                if (focusedItem && focusedItem.nextElementSibling) {
-                    focusedItem.classList.remove('focused');
-                    focusedItem.nextElementSibling.classList.add('focused');
-                } else if (!focusedItem && resultsDropdown.firstElementChild) {
-                    resultsDropdown.firstElementChild.classList.add('focused');
-                }
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                if (focusedItem && focusedItem.previousElementSibling) {
-                    focusedItem.classList.remove('focused');
-                    focusedItem.previousElementSibling.classList.add('focused');
-                } else if (focusedItem) {
-                    focusedItem.classList.remove('focused');
-                    resultsDropdown.lastElementChild.classList.add('focused');
-                }
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                if (focusedItem) focusedItem.click();
+
+        function capitalizeWords(str) {
+            if (!str) return '';
+            return str.toLowerCase().split(' ').map(word => {
+                if (word.length === 0) return '';
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }).join(' ');
+        }
+
+        function showModalNotification(message, title = 'Peringatan') {
+            const myModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+            document.getElementById('notificationModalLabel').textContent = title;
+            document.getElementById('notificationMessage').textContent = message;
+            myModal.show();
+        }
+
+        function loadDataMaster() {
+            const refs = {
+                nama: database.ref('data_master/nama'),
+                blok_kamar: database.ref('data_master/blok'),
+                judul_buku: database.ref('data_master/buku')
+            };
+
+            for (const key in refs) {
+                refs[key].on('value', (snapshot) => {
+                    const dataArray = [];
+                    snapshot.forEach((childSnapshot) => {
+                        dataArray.push(childSnapshot.val());
+                    });
+                    masterData[key] = dataArray.sort((a, b) => a.localeCompare(b));
+                });
             }
-        });
-    }
-
-    // Fungsi untuk memeriksa semua input dan submit otomatis
-    function checkAndSubmit() {
-        const form = document.getElementById('pengunjung-form');
-        const nama = document.getElementById('nama').value;
-        const blokKamar = document.getElementById('blok_kamar').value;
-        const judulBuku = document.getElementById('judul_buku').value;
-        const jenjang = form.querySelector('input[name="jenjang"]:checked');
-        const kategori = form.querySelector('input[name="kategori"]:checked');
-        const keterangan = form.querySelector('input[name="keterangan"]:checked');
-        
-        const submitBtn = document.getElementById('submit-btn');
-
-        if (nama && blokKamar && judulBuku && jenjang && kategori && keterangan) {
-            submitBtn.click();
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadDataMaster();
-        setupSearchInput('nama', 'nama-results', 'nama');
-        setupSearchInput('blok_kamar', 'blok_kamar-results', 'blok_kamar');
-        setupSearchInput('judul_buku', 'judul_buku-results', 'judul_buku');
-        
-        const form = document.getElementById('pengunjung-form');
+        let isClickingDropdown = false;
 
-        // Mendengarkan perubahan pada radio button untuk memicu submit otomatis
-        form.querySelectorAll('input[type="radio"]').forEach(radio => {
-            radio.addEventListener('change', checkAndSubmit);
-        });
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const nama = document.getElementById('nama').value;
-            const kategori = form.querySelector('input[name="kategori"]:checked');
-            const jenjang = form.querySelector('input[name="jenjang"]:checked');
-            const keterangan = form.querySelector('input[name="keterangan"]:checked');
-            
-            if (!jenjang || !kategori || !keterangan) {
-                showModalNotification('Mohon lengkapi semua pilihan yang ada.');
+        function showResults(inputId, resultsId, data) {
+            const input = document.getElementById(inputId);
+            const resultsDropdown = document.getElementById(resultsId);
+            const inputValue = input.value.toLowerCase();
+            resultsDropdown.innerHTML = '';
+            if (inputValue === '') {
+                resultsDropdown.style.display = 'none';
                 return;
             }
-
-            const formData = {
-                tanggal: Date.now(),
-                nama: nama,
-                blok_kamar: document.getElementById('blok_kamar').value,
-                jenjang: jenjang.value,
-                judul_buku: document.getElementById('judul_buku').value,
-                kategori: kategori.value,
-                keterangan: keterangan.value,
-            };
-            
-            const newPengunjungRef = database.ref('pengunjung').push();
-            newPengunjungRef.set(formData)
-                .then(() => {
-                    window.location.href = `terimakasih.html?nama=${encodeURIComponent(nama)}`;
-                })
-                .catch((error) => {
-                    alert(`Gagal menyimpan data: ${error.message}`);
+            const filteredData = data.filter(item => item.toLowerCase().includes(inputValue));
+            if (filteredData.length > 0) {
+                filteredData.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    if (index === 0) li.classList.add('focused');
+                    resultsDropdown.appendChild(li);
                 });
-        });
-    });
-</script>
+                setupDropdownItemListeners(resultsDropdown, input);
+                resultsDropdown.style.display = 'block';
+            } else {
+                resultsDropdown.style.display = 'none';
+            }
+        }
 
+        function setupDropdownItemListeners(resultsDropdown, input) {
+            resultsDropdown.querySelectorAll('li').forEach(li => {
+                li.addEventListener('click', () => {
+                    input.value = li.textContent;
+                    resultsDropdown.style.display = 'none';
+                    input.focus();
+                    isClickingDropdown = false;
+                });
+            });
+        }
+
+        function setupSearchInput(inputId, resultsId, dataKey) {
+            const input = document.getElementById(inputId);
+            const resultsDropdown = document.getElementById(resultsId);
+
+            input.addEventListener('input', () => {
+                const cursorPosition = input.selectionStart;
+                const originalValue = input.value;
+                const formattedValue = capitalizeWords(originalValue);
+                input.value = formattedValue;
+                input.setSelectionRange(cursorPosition, cursorPosition);
+                showResults(inputId, resultsId, masterData[dataKey]);
+            });
+            
+            resultsDropdown.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                isClickingDropdown = true;
+            });
+
+            if (inputId === 'nama') {
+                input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        if (!isClickingDropdown) {
+                            resultsDropdown.style.display = 'none';
+                            const enteredName = input.value.trim();
+
+                            if (enteredName && !masterData.nama.includes(enteredName)) {
+                                const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                                document.getElementById('confirmationMessage').textContent =
+                                    `Nama Anda "${enteredName}" Tidak Terdaftar Di Akun Perpustakaan. ` +
+                                    `Apakah ini Benar-Benar Nama Lengkap Anda? Jika Iya, kami Akan Menambahkan Nama Anda di Master Data.`;
+                                
+                                document.getElementById('confirmAddNameBtn').onclick = () => {
+                                    database.ref('data_master/nama').push(enteredName)
+                                        .then(() => {
+                                            masterData.nama.push(enteredName);
+                                            masterData.nama.sort((a, b) => a.localeCompare(b));
+                                            showModalNotification(`Nama "${enteredName}" berhasil ditambahkan!`, "Berhasil");
+                                            confirmModal.hide();
+                                        })
+                                        .catch(error => {
+                                            showModalNotification(`Gagal menambahkan nama: ${error.message}`);
+                                            confirmModal.hide();
+                                        });
+                                };
+                                confirmModal.show();
+                            }
+                        }
+                        isClickingDropdown = false;
+                    }, 100);
+                });
+            } else {
+                input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        if (!isClickingDropdown) {
+                            resultsDropdown.style.display = 'none';
+                        }
+                        isClickingDropdown = false;
+                    }, 100);
+                });
+            }
+
+            input.addEventListener('keydown', (e) => {
+                const focusedItem = resultsDropdown.querySelector('.focused');
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (focusedItem && focusedItem.nextElementSibling) {
+                        focusedItem.classList.remove('focused');
+                        focusedItem.nextElementSibling.classList.add('focused');
+                    } else if (!focusedItem && resultsDropdown.firstElementChild) {
+                        resultsDropdown.firstElementChild.classList.add('focused');
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (focusedItem && focusedItem.previousElementSibling) {
+                        focusedItem.classList.remove('focused');
+                        focusedItem.previousElementSibling.classList.add('focused');
+                    } else if (focusedItem) {
+                        focusedItem.classList.remove('focused');
+                        resultsDropdown.lastElementChild.classList.add('focused');
+                    }
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (focusedItem) {
+                        focusedItem.click();
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDataMaster();
+            setupSearchInput('nama', 'nama-results', 'nama');
+            setupSearchInput('blok_kamar', 'blok_kamar-results', 'blok_kamar');
+            setupSearchInput('judul_buku', 'judul_buku-results', 'judul_buku');
+            
+            const form = document.getElementById('pengunjung-form');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const jenjangSelect = document.getElementById('jenjang-select');
+                const kategoriSelect = document.getElementById('kategori-select');
+                const keteranganSelect = document.getElementById('keterangan-select');
+
+                if (!jenjangSelect.value || !kategoriSelect.value || !keteranganSelect.value) {
+                    showModalNotification('Mohon lengkapi semua pilihan yang ada.');
+                    return;
+                }
+
+                const formData = {
+                    tanggal: Date.now(),
+                    nama: document.getElementById('nama').value,
+                    blok_kamar: document.getElementById('blok_kamar').value,
+                    jenjang: jenjangSelect.value,
+                    judul_buku: document.getElementById('judul_buku').value,
+                    kategori: kategoriSelect.value,
+                    keterangan: keteranganSelect.value,
+                };
+                
+                const newPengunjungRef = database.ref('pengunjung').push();
+                newPengunjungRef.set(formData)
+                    .then(() => {
+                        window.location.href = `terimakasih.html?nama=${encodeURIComponent(formData.nama)}`;
+                    })
+                    .catch((error) => {
+                        alert(`Gagal menyimpan data: ${error.message}`);
+                    });
+            });
+        });
+    </script>
 </body>
 </html>
