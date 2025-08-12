@@ -15,8 +15,7 @@
             min-height: 100vh;
             text-align: center;
             color: white;
-            cursor: pointer; /* Menambahkan kursor pointer untuk menunjukkan halaman bisa diklik */
-
+            cursor: pointer;
             background: linear-gradient(to right, #7fcac8, #0a5c6a, #20c997);
             background-size: 400% 400%;
             animation: gradientAnimation 15s ease infinite;
@@ -51,15 +50,14 @@
             font-weight: bold;
             margin-top: 0.5rem;
         }
-
-        /* Tombol "Kembali" dihapus */
     </style>
 </head>
 <body>
 
 <div id="message-container">
-    <h1>Terima Kasih, telah berkunjung di Perpustakaan Lubangsa</h1>
+    <h1>Terima Kasih</h1>
     <p id="visitor-name"></p>
+    <p id="countdown-message">Kunjungan Anda Sudah Tercatat</p>
 </div>
 
 <script>
@@ -72,11 +70,16 @@
         } else {
             document.getElementById('visitor-name').textContent = 'Pengunjung';
         }
-    });
 
-    // Event listener untuk mengarahkan kembali ke halaman index.html
-    document.body.addEventListener('click', () => {
-        window.location.href = 'index.html';
+        // Fungsi untuk mengarahkan kembali setelah 5 detik
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 5000); // 5000 milidetik = 5 detik
+
+        // Event listener untuk mengarahkan kembali ke halaman index.html saat diklik
+        document.body.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
     });
 </script>
 
