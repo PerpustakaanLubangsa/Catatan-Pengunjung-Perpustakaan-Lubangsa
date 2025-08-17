@@ -351,26 +351,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             new TomSelect("#jenjang-select", {
                 create: false,
-                sortField: {
-                    field: "text",
-                    direction: "asc"
-                }
+                sortField: { field: "text", direction: "asc" }
             });
-            
             new TomSelect("#kategori-select", {
                 create: false,
-                sortField: {
-                    field: "text",
-                    direction: "asc"
-                }
+                sortField: { field: "text", direction: "asc" }
             });
-            
             new TomSelect("#keterangan-select", {
                 create: false,
-                sortField: {
-                    field: "text",
-                    direction: "asc"
-                }
+                sortField: { field: "text", direction: "asc" }
             });
         });
 
@@ -444,6 +433,59 @@
             });
         }
 
+        // ===== Tambahan: generalisasi konfirmasi untuk nama, blok/kamar, dan judul buku =====
+        const fieldMeta = {
+            nama: {
+                path: 'data_master/nama',
+                title: 'Konfirmasi Penambahan Nama',
+                message: (v) => `Nama Anda "${v}" Tidak Terdaftar Di Akun Perpustakaan. Apakah ini Benar-Benar Nama Lengkap Anda? Jika Iya, kami Akan Menambahkan Nama Anda di Master Data.`,
+                success: (v) => `Nama "${v}" berhasil ditambahkan!`
+            },
+            blok_kamar: {
+                path: 'data_master/blok',
+                title: 'Konfirmasi Penambahan Blok/Kamar',
+                message: (v) => `Blok/Kamar "${v}" Tidak Terdaftar Di Akun Perpustakaan. Apakah ini Benar? Jika Iya, kami Akan Menambahkan Blok/Kamar ini di Master Data.`,
+                success: (v) => `Blok/Kamar "${v}" berhasil ditambahkan!`
+            },
+            judul_buku: {
+                path: 'data_master/buku',
+                title: 'Konfirmasi Penambahan Judul Buku',
+                message: (v) => `Judul Buku "${v}" Tidak Terdaftar Di Akun Perpustakaan. Apakah ini Benar? Jika Iya, kami Akan Menambahkan Judul Buku ini di Master Data.`,
+                success: (v) => `Judul Buku "${v}" berhasil ditambahkan!`
+            }
+        };
+
+        function promptAddToMaster(fieldKey, value) {
+            const meta = fieldMeta[fieldKey];
+            if (!meta) return;
+
+            // set judul modal dinamis TANPA mengubah struktur HTML
+            document.getElementById('confirmationModalLabel').textContent = meta.title;
+            document.getElementById('confirmationMessage').textContent = meta.message(value);
+
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+
+            // reset handler agar tidak dobel
+            const btn = document.getElementById('confirmAddNameBtn');
+            btn.onclick = null;
+            btn.onclick = () => {
+                database.ref(meta.path).push(value)
+                    .then(() => {
+                        masterData[fieldKey].push(value);
+                        masterData[fieldKey].sort((a, b) => a.localeCompare(b));
+                        showModalNotification(meta.success(value), 'Berhasil');
+                        confirmModal.hide();
+                    })
+                    .catch(error => {
+                        showModalNotification(`Gagal menambahkan data: ${error.message}`);
+                        confirmModal.hide();
+                    });
+            };
+
+            confirmModal.show();
+        }
+        // ===== Akhir tambahan =====
+
         function setupSearchInput(inputId, resultsId, dataKey) {
             const input = document.getElementById(inputId);
             const resultsDropdown = document.getElementById(resultsId);
@@ -462,33 +504,15 @@
                 isClickingDropdown = true;
             });
 
-            if (inputId === 'nama') {
+            // Ubah: cek & tawarkan tambah untuk tiga field ini
+            if (['nama','blok_kamar','judul_buku'].includes(dataKey)) {
                 input.addEventListener('blur', () => {
                     setTimeout(() => {
                         if (!isClickingDropdown) {
                             resultsDropdown.style.display = 'none';
-                            const enteredName = input.value.trim();
-
-                            if (enteredName && !masterData.nama.includes(enteredName)) {
-                                const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-                                document.getElementById('confirmationMessage').textContent =
-                                    `Nama Anda "${enteredName}" Tidak Terdaftar Di Akun Perpustakaan. ` +
-                                    `Apakah ini Benar-Benar Nama Lengkap Anda? Jika Iya, kami Akan Menambahkan Nama Anda di Master Data.`;
-                                
-                                document.getElementById('confirmAddNameBtn').onclick = () => {
-                                    database.ref('data_master/nama').push(enteredName)
-                                        .then(() => {
-                                            masterData.nama.push(enteredName);
-                                            masterData.nama.sort((a, b) => a.localeCompare(b));
-                                            showModalNotification(`Nama "${enteredName}" berhasil ditambahkan!`, "Berhasil");
-                                            confirmModal.hide();
-                                        })
-                                        .catch(error => {
-                                            showModalNotification(`Gagal menambahkan nama: ${error.message}`);
-                                            confirmModal.hide();
-                                        });
-                                };
-                                confirmModal.show();
+                            const entered = input.value.trim();
+                            if (entered && !masterData[dataKey].includes(entered)) {
+                                promptAddToMaster(dataKey, entered);
                             }
                         }
                         isClickingDropdown = false;
