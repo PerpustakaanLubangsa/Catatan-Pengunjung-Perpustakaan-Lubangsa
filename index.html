@@ -374,7 +374,7 @@
 
             // Memuat dan menampilkan kata-kata motivasi
             loadMotivationQuotes();
-            setInterval(displayNextQuote, 5000); // Ganti kutipan setiap 5 detik
+            setInterval(displayNextQuote, 15000); // Ganti kutipan setiap 5 detik
         });
 
         // Fungsi untuk memuat kata-kata motivasi dari Firebase
@@ -403,7 +403,7 @@
                     currentQuoteIndex = (currentQuoteIndex + 1) % motivationQuotes.length;
                     // Tambahkan efek fade-in setelah teks berubah
                     quoteElement.style.opacity = 1; 
-                }, 10000); // Sesuaikan durasi fade-out
+                }, 500); // Sesuaikan durasi fade-out
             } else {
                 quoteElement.textContent = "Selamat datang di perpustakaan!";
             }
@@ -647,3 +647,4 @@
     </script>
 </body>
 </html>
+
