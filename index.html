@@ -68,6 +68,11 @@
             color: white;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
             margin-bottom: 0.5rem;
+            min-height: 4.5rem; /* Memberikan tinggi minimum agar tidak 'lompat' saat teks berubah */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-in-out; /* Transisi untuk efek fade */
         }
 
         .container {
@@ -226,7 +231,8 @@
 <body>
     <div class="main-content">
         <div class="main-header">
-            <h1>Lubangsa's Library</h1>
+            <!-- Judul akan diisi oleh JavaScript dengan kata-kata motivasi -->
+            <h1 id="motivation-quote"></h1>
         </div>
 
         <div class="container" id="form-container">
@@ -348,6 +354,10 @@
             judul_buku: []
         };
 
+        // Array untuk menyimpan kata-kata motivasi
+        let motivationQuotes = [];
+        let currentQuoteIndex = 0;
+
         document.addEventListener('DOMContentLoaded', () => {
             new TomSelect("#jenjang-select", {
                 create: false,
@@ -361,7 +371,43 @@
                 create: false,
                 sortField: { field: "text", direction: "asc" }
             });
+
+            // Memuat dan menampilkan kata-kata motivasi
+            loadMotivationQuotes();
+            setInterval(displayNextQuote, 5000); // Ganti kutipan setiap 5 detik
         });
+
+        // Fungsi untuk memuat kata-kata motivasi dari Firebase
+        function loadMotivationQuotes() {
+            database.ref('motivation_quotes').on('value', (snapshot) => {
+                motivationQuotes = [];
+                snapshot.forEach((childSnapshot) => {
+                    motivationQuotes.push(childSnapshot.val());
+                });
+                // Jika tidak ada kutipan, gunakan default
+                if (motivationQuotes.length === 0) {
+                    motivationQuotes = ["Buku adalah jendela dunia.", "Membaca adalah petualangan tanpa batas.", "Hari ini membaca, esok memimpin."];
+                }
+                displayNextQuote(); // Tampilkan kutipan pertama setelah dimuat
+            });
+        }
+
+        // Fungsi untuk menampilkan kutipan motivasi berikutnya
+        function displayNextQuote() {
+            const quoteElement = document.getElementById('motivation-quote');
+            if (motivationQuotes.length > 0) {
+                // Tambahkan efek fade-out sebelum mengubah teks
+                quoteElement.style.opacity = 0; 
+                setTimeout(() => {
+                    quoteElement.textContent = motivationQuotes[currentQuoteIndex];
+                    currentQuoteIndex = (currentQuoteIndex + 1) % motivationQuotes.length;
+                    // Tambahkan efek fade-in setelah teks berubah
+                    quoteElement.style.opacity = 1; 
+                }, 10000); // Sesuaikan durasi fade-out
+            } else {
+                quoteElement.textContent = "Selamat datang di perpustakaan!";
+            }
+        }
 
         function capitalizeWords(str) {
             if (!str) return '';
@@ -593,7 +639,8 @@
                         window.location.href = `terimakasih.html?nama=${encodeURIComponent(formData.nama)}`;
                     })
                     .catch((error) => {
-                        alert(`Gagal menyimpan data: ${error.message}`);
+                        // Mengganti alert dengan modal notifikasi
+                        showModalNotification(`Gagal menyimpan data: ${error.message}`);
                     });
             });
         });
